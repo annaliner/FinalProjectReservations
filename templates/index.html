@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservation Application</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+  
+</head>
+<body>
+
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Admin</a></li>
+      <li><a href="#">Reservations</a></li>
+    </ul>
+  </nav>
+
+  <div class="container"> 
+    <form class="app-form"> 
+      <h1>IT-4320 Trip Reservation System</h1>
+      <hr>
+      <h2>Choose Menu Option</h2>
+      <p>Welcome to the IT-4320 reservation system. Use the select to choose whether to make a reservation of log in as an administrator.</p>
+      <select name="options" id="select-options">
+        <option value="admin">Admin</option>
+        <option value="reservations">Reservations</option>
+      </select>
+      <br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+  
+</body>
+</html>
