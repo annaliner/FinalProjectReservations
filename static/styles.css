@@ -94,3 +94,7 @@ p {
 .app-form input[type="submit"]:hover {
   background-color: #555;
 }
+
+.seatingChart {
+  text-align: left;
+}
