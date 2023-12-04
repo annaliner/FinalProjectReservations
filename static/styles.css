@@ -28,7 +28,7 @@ nav ul li a {
   transition: color 0.3s ease; 
   font-weight: lighter;
 }
-
+/* something */
 nav ul li a:hover {
   color: #8eb1d5; 
 }
