@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservation Application</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+  
+<!-- maybe display the seating chart differently  -->
+<!-- when the user hits submit need to have Seating chart replaced with: -->
+<!-- Congratulations lastName! Row: row, Seat: seat is now reserved for you. Enjoy your trip! --> 
+<!-- Your eticket number is: etickitNum -->
+
+</head>
+<body>
+
+  <nav>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Admin</a></li>
+      <li><a href="#">Reservations</a></li>
+    </ul>
+  </nav>
+
+  <div class="container"> 
+
+    <form class="app-form" action="/submit_reservation" method="POST"> 
+      <h1>Reserve Your Seat</h1>
+      <hr>
+      <div class="confirmMessage">
+        <div id="resevationMessage"></div>
+      </div>
+      <div class="seatingChart">
+        <h4>Seating chart</h4>
+        <h5>X = Reserved Seat: O = Available Seat</h5>
+        <div id="seatGrid">
+            {% for row in seating_chart %}
+                <div class="seatRow">
+                    {% for seat in row %}
+                        <span class="seat">{{ seat }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <br>
+        <div class="userDetails">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+            <br><br>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+        </div>
+        <br>
+        <div class="chartDetails">
+            <label for="row">Choose a Row</label>
+            <select name="row" id="select-row">
+                <option value="">Choose a Row</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+            </select>
+            <br>
+            <label for="seat">Choose a Seat</label>
+            <select name="seat" id="select-seat">
+                <option value="">Choose a Seat</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </div>
+      </div>
+      <input type="submit" id="submitBtn" value="Submit">
+    </form>
+  </div>
+  <script>
+    document.getElementById('submitBtn').addEventListener('click', function(event) {
+        let firstName = document.getElementById('firstName').value;
+        let lastName = document.getElementById('lastName').value;
+        let row = document.getElementById('select-row').value;
+        let seat = document.getElementById('select-seat').value;
+        let missingFields = [];
+
+        if (!firstName) missingFields.push("First Name");
+        if (!lastName) missingFields.push("Last Name");
+        if (!row) missingFields.push("Row");
+        if (!seat) missingFields.push("Seat");
+
+        if (missingFields.length > 0) {
+            event.preventDefault(); // Prevent form submission
+            alert("Please fill out the following fields: " + missingFields.join(", "));
+        } else {
+          // event.preventDefault();
+          let message = `Congratulations ${lastName}! Row: ${row}, Seat: ${seat} is now reserved for you. Enjoy your trip!`;
+          document.getElementById('resevationMessage').innerText = message;
+        }
+    });
+</script>
+</body>
+</html>
