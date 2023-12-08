@@ -16,9 +16,9 @@
 
   <nav>
     <ul>
-      <li><a href="#">Home</a></li>
+      <li><a href="{{ url_for('index')}}">Home</a></li>
       <li><a href="#">Admin</a></li>
-      <li><a href="#">Reservations</a></li>
+      <li><a href="{{ url_for('reservations')}}">Reservations</a></li>
     </ul>
   </nav>
 
@@ -27,9 +27,9 @@
     <form class="app-form" action="/submit_reservation" method="POST"> 
       <h1>Reserve Your Seat</h1>
       <hr>
-      <div class="confirmMessage">
+      <!-- <div class="confirmMessage">
         <div id="resevationMessage"></div>
-      </div>
+      </div> -->
       <div class="seatingChart">
         <h4>Seating chart</h4>
         <h5>X = Reserved Seat: O = Available Seat</h5>
@@ -101,7 +101,8 @@
         } else {
           // event.preventDefault();
           let message = `Congratulations ${lastName}! Row: ${row}, Seat: ${seat} is now reserved for you. Enjoy your trip!`;
-          document.getElementById('resevationMessage').innerText = message;
+          // document.getElementById('resevationMessage').innerText = message;
+          alert(message)
         }
     });
 </script>
