@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  web:
+    build: 
+      context: . 
+      dockerfile: Dockerfile
+    image: finalproject_image
+    container_name: FinalProject
+    ports:
+      - "5000:5004"
+    volumes:
+      - .:/app
+    environment:
+      FINALPROJECT_DEBUG: "1"
