@@ -12,7 +12,7 @@
   <nav>
     <ul>
       <li><a href="{{ url_for('index')}}">Home</a></li>
-      <li><a href="#">Admin</a></li>
+      <li><a href="{{ url_for('admin_login')}}">Admin</a></li>
       <li><a href="{{ url_for('reservations')}}">Reservations</a></li>
     </ul>
   </nav>
@@ -23,6 +23,10 @@
       <hr>
       <h2>Admin Login</h2>
       <p>Welcome to the IT-4320 reservation system. Log in as an administrator.</p>
+
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
 
       <!-- Add admin login fields -->
       <label for="username">Username:</label>

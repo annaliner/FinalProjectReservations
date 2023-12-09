@@ -26,13 +26,13 @@ def index():
 @app.route('/reservations/', methods=['GET', 'POST'])
 def reservations():
 
-    global is_admin_logged_in
+    #global is_admin_logged_in
 
-    if not is_admin_logged_in:
-        return redirect(url_for('admin_login'))
+    #if not is_admin_logged_in:
+       # return redirect(url_for('admin_login'))
     
-    if is_admin_logged_in:
-        return redirect(url_for('reservations'))
+    #if is_admin_logged_in:
+        #return redirect(url_for('reservations'))
 
     # generating seating chart
     seating_chart = [['O' for _ in range(4)] for _ in range(12)]  # Initialize seating chart
@@ -60,6 +60,17 @@ def submit_reservation():
         last_name = request.form['lastName']
         row = request.form['row']
         seat = request.form['seat']
+
+        with open('reservations.txt', 'r') as file:
+                    for line in file:
+                        parts = line.split(', ')
+                        if len(parts) == 4:
+                            reserved_row = int(parts[1]) - 1
+                            reserved_seat = int(parts[2]) - 1
+                            if row == reserved_row and seat == reserved_seat:
+                                alert_message = "Error: Seat already reserved. Please choose another seat."
+                                return render_template('alert.html', alert_message=alert_message)
+
         eTicket = random.randint(1000, 9999)  # Random 4-digit number
 
         total_price = TICKET_PRICE
@@ -77,6 +88,8 @@ def submit_reservation():
 def admin_login():
     global is_admin_logged_in
 
+    error_message = None
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -86,9 +99,9 @@ def admin_login():
             is_admin_logged_in = True
             return redirect(url_for('reservations'))
         else:
-            return render_template('admin_login.html', error="Invalid username or password")
+            error_message = "Invalid username or password. Check your credentials, and try again."
 
-    return render_template('admin_login.html', error=None)
+    return render_template('admin_login.html', error=error_message)
 
 
 @app.route('/admin/logout/')
