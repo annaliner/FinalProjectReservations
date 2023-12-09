@@ -12,6 +12,11 @@ TICKET_PRICE = 75
 
 is_admin_logged_in = False
 
+def get_cost_matrix():
+    cost_matrix = [[100, 75, 50, 100] for _ in range(12)]
+    return cost_matrix
+
+
 # opening up browser
 def open_browser():
     print("Opening browser")
@@ -31,9 +36,21 @@ def reservations():
     if not is_admin_logged_in:
         return redirect(url_for('admin_login'))
     
-    if is_admin_logged_in:
-        return redirect(url_for('reservations'))
+    # if is_admin_logged_in:
+    #     return redirect(url_for('reservations'))
+    total_sales = 0 
+    cost_matrix = get_cost_matrix()
 
+    try:
+        with open('reservations.txt', 'r') as file: 
+            for line in file: 
+                parts = line.strip().split(', ')
+                if len(parts) >= 4:
+                    row = int(parts[1]) - 1
+                    seats = int(parts[2]) - 1
+                    total_sales += cost_matrix[row][seat]
+    except Exception as e:
+        print(f"Error reading file: {e}")
     # generating seating chart
     seating_chart = [['O' for _ in range(4)] for _ in range(12)]  # Initialize seating chart
 
@@ -43,15 +60,16 @@ def reservations():
             line = line.strip()
             if line:
                 parts = line.split(', ')
-                if len(parts) == 4:
+                if len(parts) >= 4:
                     # Format: 'Lastname, row, seat, idnum'
                     row = int(parts[1]) - 1  # Convert to zero-index
                     seat = int(parts[2]) - 1
                     seating_chart[row][seat] = 'X'  # Mark as reserved
+                    total_sales += cost_matrix[row][seat]
                     
                 else:
                     print(f"Invalid line format: {line}")
-    return render_template('reservations.html', seating_chart=seating_chart)
+    return render_template('reservations.html', seating_chart=seating_chart, is_admin_logged_in=is_admin_logged_in, total_sales=total_sales)
 
 # handling whenever user hits submit on reservations.html
 @app.route('/submit_reservation', methods=['POST'])
@@ -76,17 +94,39 @@ def submit_reservation():
 @app.route('/admin/login/', methods=['GET', 'POST'])
 def admin_login():
     global is_admin_logged_in
+    # Read admin credentials from file
+
+
+    credentials = {}
+    try: 
+        with open('final_project_files/passcodes.txt', 'r') as file:
+            for line in file:
+                username, password = line.strip().split(', ')
+                credentials[username.strip()] = password.strip()
+                print(f"Loaded credential: Username={username.strip()}, Password={password.strip()}")  # Debugging print
+
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        return render_template('admin_login.html', error="Error reading credentials file.")
 
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
 
-       
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        print(f"Username: {username}, Password: {password}")
+
+        if credentials.get(username) == password:
             is_admin_logged_in = True
             return redirect(url_for('reservations'))
         else:
             return render_template('admin_login.html', error="Invalid username or password")
+
+        # Check credentials
+        # if credentials.get(username) == password:
+        #     is_admin_logged_in = True
+        #     return redirect(url_for('reservations'))
+        # else:
+        #     return render_template('admin_login.html', error="Invalid username or password")
 
     return render_template('admin_login.html', error=None)
 

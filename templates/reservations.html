@@ -20,6 +20,9 @@
       <li><a href="{{ url_for('index')}}">Home</a></li>
       <li><a href="#">Admin</a></li>
       <li><a href="{{ url_for('reservations')}}">Reservations</a></li>
+      {% if is_admin_logged_in %}
+      <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+      {% endif %}
     </ul>
   </nav>
 
@@ -44,6 +47,7 @@
             {% endfor %}
         </div>
         <br>
+        <p>Total Sales: {{ total_sales }}</p>
         <div class="userDetails">
             <label for="firstName">First Name:</label>
             <input type="text" id="firstName" name="firstName" required>
