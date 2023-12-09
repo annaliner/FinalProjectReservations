@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import webbrowser 
 import threading 
 import os
@@ -9,6 +9,7 @@ app = Flask(__name__)
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin_password"
 TICKET_PRICE = 75
+app.secret_key = "my_key"
 
 is_admin_logged_in = False
 
@@ -23,18 +24,26 @@ def open_browser():
     webbrowser.open_new('http://127.0.0.1:5000/')
 
 # redirecting to index.html
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def index():
+    if request.method == 'POST':
+        selected_option = request.form.get('options')
+
+        if selected_option == 'admin':
+            return redirect(url_for('admin_login'))
+        elif selected_option == 'reservations':
+            return redirect(url_for('reservations'))
+        
     return render_template('index.html')
 
 # reservation page
 @app.route('/reservations/', methods=['GET', 'POST'])
 def reservations():
 
-    global is_admin_logged_in
+    #global is_admin_logged_in
 
-    if not is_admin_logged_in:
-        return redirect(url_for('admin_login'))
+    #if not is_admin_logged_in:
+        #return redirect(url_for('admin_login'))
     
     # if is_admin_logged_in:
     #     return redirect(url_for('reservations'))
@@ -93,7 +102,7 @@ def submit_reservation():
 
 @app.route('/admin/login/', methods=['GET', 'POST'])
 def admin_login():
-    global is_admin_logged_in
+    #global is_admin_logged_in
     # Read admin credentials from file
 
 
@@ -116,7 +125,7 @@ def admin_login():
         print(f"Username: {username}, Password: {password}")
 
         if credentials.get(username) == password:
-            is_admin_logged_in = True
+            session['is_admin'] = True
             return redirect(url_for('reservations'))
         else:
             return render_template('admin_login.html', error="Invalid username or password")
