@@ -126,7 +126,8 @@ def admin_login():
 
         if credentials.get(username) == password:
             session['is_admin'] = True
-            return redirect(url_for('reservations'))
+            total_sales, seating_chart = get_total_sales_and_chart()
+            return redirect(url_for('admin_dashboard'))
         else:
             return render_template('admin_login.html', error="Invalid username or password")
 
@@ -139,6 +140,34 @@ def admin_login():
 
     return render_template('admin_login.html', error=None)
 
+@app.route('/admin/dashboard/')
+def admin_dashboard():
+    if not session.get('is_admin'):
+        return redirect(url_for('admin_login'))
+    
+    total_sales, seating_chart = get_total_sales_and_chart()
+
+    return render_template('admin_dashboard.html', total_sales=total_sales, seating_chart=seating_chart,)
+
+def get_total_sales_and_chart():
+    total_sales = 0
+    cost_matrix = get_cost_matrix()
+    seating_chart = [['O' for _ in range(4)] for _ in range(12)]
+
+    try:
+        with open('reservations.txt', 'r') as file:
+            for line in file:
+                parts = line.strip().split(', ')
+                if len(parts) >= 4:
+                    row = int(parts[1]) - 1
+                    seat = int(parts[2]) - 1
+                    seating_chart[row][seat] = 'X'
+                    total_sales += cost_matrix[row][seat]
+
+    except Exception as e:
+        print(f"Error reading file: {e}")
+
+    return total_sales, seating_chart
 
 @app.route('/admin/logout/')
 def admin_logout():

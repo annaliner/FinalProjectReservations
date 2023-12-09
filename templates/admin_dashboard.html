@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('admin_logout') }}">Logout</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+    <h1>Welcome, Admin!</h1>
+
+    <h4>Seating chart</h4>
+    <h5>X = Reserved Seat: O = Available Seat</h5>
+    <div id="seatGrid">
+        {% for row in seating_chart %}
+            <div class="seatRow">
+                {% for seat in row %}
+                    <span class="seat">{{ seat }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    <br>
+    <p>Total Sales: {{ total_sales }}</p>
+</div>
+
+</body>
+</html>
