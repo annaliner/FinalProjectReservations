@@ -6,6 +6,11 @@ import csv
 import random
 
 app = Flask(__name__)
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin_password"
+TICKET_PRICE = 75
+
+is_admin_logged_in = False
 
 # opening up browser
 def open_browser():
@@ -17,17 +22,21 @@ def open_browser():
 def index():
     return render_template('index.html')
 
-# # admin page
-# @app.route('/admin/', methods=('GET', 'POST'))
-# def admin():
-#     return render_template('admin.html')
-
-
 # reservation page
 @app.route('/reservations/', methods=['GET', 'POST'])
 def reservations():
+
+    global is_admin_logged_in
+
+    if not is_admin_logged_in:
+        return redirect(url_for('admin_login'))
+    
+    if is_admin_logged_in:
+        return redirect(url_for('reservations'))
+
     # generating seating chart
     seating_chart = [['O' for _ in range(4)] for _ in range(12)]  # Initialize seating chart
+
     # Read reservations and update seating chart
     with open('reservations.txt', 'r') as file:
         for line in file:
@@ -53,8 +62,10 @@ def submit_reservation():
         seat = request.form['seat']
         eTicket = random.randint(1000, 9999)  # Random 4-digit number
 
+        total_price = TICKET_PRICE
+
         with open('reservations.txt', 'a') as file:
-            file.write(f'{last_name}, {row}, {seat}, {eTicket}\n')
+            file.write(f'{last_name}, {row}, {seat}, {eTicket}, {total_price}\n')
 
         # Redirect to a confirmation page or back to the form
         return redirect(url_for('reservations'))
@@ -62,6 +73,29 @@ def submit_reservation():
     # If the method is not POST, redirect to the form
     return redirect(url_for('reservations'))
 
+@app.route('/admin/login/', methods=['GET', 'POST'])
+def admin_login():
+    global is_admin_logged_in
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+       
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            is_admin_logged_in = True
+            return redirect(url_for('reservations'))
+        else:
+            return render_template('admin_login.html', error="Invalid username or password")
+
+    return render_template('admin_login.html', error=None)
+
+
+@app.route('/admin/logout/')
+def admin_logout():
+    global is_admin_logged_in
+    is_admin_logged_in = False
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     # found that this helped with browser functionality, mainly without it when running the program itll open 2 windows at once, with this code it only opens 1
